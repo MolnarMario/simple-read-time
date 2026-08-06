@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Simple Read Time
  * Description: Estimates and displays the reading time of a post based on its word count. Adjust reading speed under Settings → Read Time.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: You
  * License: GPL v2 or later
  */
@@ -93,6 +93,39 @@ function srt_add_settings_page() {
 add_action( 'admin_menu', 'srt_add_settings_page' );
 
 /**
+ * Handle the "Reset to Default" button submission.
+ */
+function srt_handle_reset_request() {
+	if ( ! isset( $_POST['srt_reset_wpm'] ) ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	check_admin_referer( 'srt_reset_wpm_action', 'srt_reset_wpm_nonce' );
+
+	update_option( 'srt_wpm', SRT_DEFAULT_WPM );
+
+	wp_safe_redirect( add_query_arg( 'srt-reset', '1', wp_get_referer() ) );
+	exit;
+}
+add_action( 'admin_init', 'srt_handle_reset_request' );
+
+/**
+ * Show a confirmation notice after a successful reset.
+ */
+function srt_reset_notice() {
+	if ( isset( $_GET['srt-reset'] ) && '1' === $_GET['srt-reset'] ) {
+		echo '<div class="notice notice-success is-dismissible"><p>'
+			. esc_html( sprintf( 'Reading speed reset to default (%d WPM).', SRT_DEFAULT_WPM ) )
+			. '</p></div>';
+	}
+}
+add_action( 'admin_notices', 'srt_reset_notice' );
+
+/**
  * Render the settings page.
  */
 function srt_render_settings_page() {
@@ -126,6 +159,11 @@ function srt_render_settings_page() {
 				</tr>
 			</table>
 			<?php submit_button( 'Save Settings' ); ?>
+		</form>
+		<form method="post" action="">
+			<?php wp_nonce_field( 'srt_reset_wpm_action', 'srt_reset_wpm_nonce' ); ?>
+			<input type="hidden" name="srt_reset_wpm" value="1" />
+			<?php submit_button( 'Reset to Default (200 WPM)', 'secondary', 'submit', false ); ?>
 		</form>
 	</div>
 	<?php

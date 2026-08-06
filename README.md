@@ -6,6 +6,7 @@ A lightweight WordPress plugin that estimates and displays the reading time of a
 
 - **Automatic read-time display** — prepends a "⏱ X min read" line above the content of every published post.
 - **Configurable reading speed** — a Settings page (**Settings → Read Time**) lets you set the average words-per-minute (WPM) used for the estimate. Default is 200 WPM.
+- **One-click reset** — a "Reset to Default (200 WPM)" button on the settings page restores the default reading speed.
 - **Zero configuration required** — works immediately on activation with sensible defaults.
 - **Lightweight** — a single PHP file, no external dependencies, no database tables, one `wp_options` entry.
 - **Minimum 1-minute floor** — even very short posts show "1 min read" rather than "0 min read".
@@ -41,11 +42,37 @@ Go to **Settings → Read Time** in the WordPress admin:
 
 Changing this value updates the estimate on every post immediately — no code changes needed.
 
+Click **Reset to Default (200 WPM)** on the same page to restore the default reading speed at any time.
+
 ## Scope / limitations
 
 - Only applies to the `post` post type on singular views (not pages, archives, or custom post types).
 - Read time is calculated from the rendered post content each page load (no caching) — fine for typical post lengths, but note if you have extremely high-traffic pages with very large content.
 - No shortcode or block is provided; the read time is auto-inserted via the `the_content` filter.
+
+## Testing
+
+End-to-end tests run against a live WordPress install and are implemented twice, once per
+framework, covering the same scenarios:
+
+**Playwright** (`e2e-playwright/`):
+
+```bash
+cd e2e-playwright
+npm install
+npx playwright test
+```
+
+**Cypress** (`e2e-cypress/`):
+
+```bash
+cd e2e-cypress
+npm install
+npx cypress run
+```
+
+Both suites log in as an admin user and expect the site to be reachable at the base URL
+configured in `e2e-playwright/playwright.config.ts` / `e2e-cypress/cypress.config.ts`.
 
 ## Requirements
 
@@ -53,6 +80,9 @@ Changing this value updates the estimate on every post immediately — no code c
 - PHP 7.0+
 
 ## Changelog
+
+### 1.2.0
+- Added a "Reset to Default (200 WPM)" button to the Read Time settings page.
 
 ### 1.1.0
 - Added **Settings → Read Time** admin page to configure words-per-minute.
