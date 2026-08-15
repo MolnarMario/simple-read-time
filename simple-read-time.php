@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Simple Read Time
  * Description: Estimates and displays the reading time of a post based on its word count. Adjust reading speed under Settings → Read Time.
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: You
  * License: GPL v2 or later
  */
@@ -163,8 +163,21 @@ function srt_render_settings_page() {
 		<form method="post" action="">
 			<?php wp_nonce_field( 'srt_reset_wpm_action', 'srt_reset_wpm_nonce' ); ?>
 			<input type="hidden" name="srt_reset_wpm" value="1" />
-			<?php submit_button( 'Reset to Default (200 WPM)', 'secondary', 'submit', false ); ?>
+			<?php submit_button( 'Reset to Default (200 WPM)', 'srt-reset-button', 'submit', false ); ?>
 		</form>
+		<style>
+			.srt-reset-button.button {
+				background: #d63638;
+				border-color: #d63638;
+				color: #fff;
+			}
+			.srt-reset-button.button:hover,
+			.srt-reset-button.button:focus {
+				background: #b32d2e;
+				border-color: #b32d2e;
+				color: #fff;
+			}
+		</style>
 	</div>
 	<?php
 }

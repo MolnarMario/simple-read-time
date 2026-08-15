@@ -52,8 +52,9 @@ Click **Reset to Default (200 WPM)** on the same page to restore the default rea
 
 ## Testing
 
-End-to-end tests run against a live WordPress install and are implemented twice, once per
-framework, covering the same scenarios:
+End-to-end tests run against a live WordPress install and are implemented once per framework
+(Playwright, Cypress, Selenium), covering the same scenarios, plus a combined suite that runs
+all three together:
 
 **Playwright** (`e2e-playwright/`):
 
@@ -71,8 +72,47 @@ npm install
 npx cypress run
 ```
 
-Both suites log in as an admin user and expect the site to be reachable at the base URL
-configured in `e2e-playwright/playwright.config.ts` / `e2e-cypress/cypress.config.ts`.
+**Selenium** (`e2e-selenium/`, Java + JUnit 5 + Maven):
+
+```bash
+cd e2e-selenium
+mvn test
+```
+
+**Combined** (`e2e-combo/`): all three frameworks in one directory — Playwright and Cypress in
+TypeScript, Selenium in Java — covering the same scenarios as the three suites above, plus the
+Reset-to-Default button's behaviour and red styling. The Automation Test Platform dashboard
+auto-detects a directory holding more than one framework and runs it as a single composite
+suite, one process per framework, all against the same site:
+
+```bash
+cd e2e-combo
+npm install               # installs both @playwright/test and cypress
+npx playwright test
+npx cypress run
+mvn test
+```
+
+All four suites log in as an admin user and are **site-agnostic**: each reads its target from
+the environment, falling back to a local default when nothing is set.
+
+| Variable | Meaning | Default |
+| --- | --- | --- |
+| `E2E_BASE_URL` | Site to test | `http://simple.local` (Playwright), `http://simple-cypress.local` (Cypress), `http://simple-selenium.local` (Selenium) |
+| `E2E_ADMIN_USER` | wp-admin username | `admin` |
+| `E2E_ADMIN_PASS` | wp-admin password | `admin` |
+
+So any suite can be pointed at any site:
+
+```bash
+E2E_BASE_URL=http://simple-cypress.local npx playwright test
+```
+
+(The Selenium suite also accepts them as system properties, e.g.
+`mvn test -DE2E_BASE_URL=http://simple.local`.)
+
+That is what lets the Automation Test Platform dashboard run any of the three suites against
+any registered site from a dropdown — see `../thrive-test-dashboard/README.md`.
 
 ## Requirements
 

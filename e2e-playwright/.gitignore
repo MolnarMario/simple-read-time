@@ -1,0 +1,8 @@
+node_modules/
+test-results/
+playwright-report/
+
+# Saved admin session + pre-run WPM snapshot. Namespaced per target site (see
+# env.ts) so runs against different sites don't trample each other's state.
+.state-*.json
+.original-wpm-*.json
